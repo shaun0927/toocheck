@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import {
-  CheckCard,
   DataPendingNote,
   DisclosureCard,
   HudLabel,
@@ -16,14 +15,12 @@ import {
   ChipDivider,
 } from '@/components/domain';
 import { buildCrossCheckPoints } from '@/lib/cross-check';
-import { avgSpecificity, specificityLabel } from '@/lib/promise-specificity';
 import { formatSourceBasis } from '@/lib/format-date';
 import {
   getCandidate,
   getCompareData,
   getDisclosure,
   getDistrict,
-  listCheckCards,
   listPromises,
 } from '@/mocks/loader';
 
@@ -33,7 +30,6 @@ const ANCHORS = [
   { id: 'profile', label: '인적사항' },
   { id: 'disclosure', label: '공개 자료' },
   { id: 'promises', label: '공약' },
-  { id: 'check-cards', label: '확인 필요도' },
   { id: 'military', label: '병역' },
   { id: 'past', label: '과거 출마' },
   { id: 'cross-check', label: '함께 확인할 지점' },
@@ -45,7 +41,7 @@ export async function generateMetadata({ params }: PageProps) {
   if (!c) return { title: '후보를 찾을 수 없음' };
   return {
     title: `기호 ${c.ballotNumber} ${c.name} (${c.party})`,
-    description: `${c.name} 후보의 공개자료·공약·확인 필요도 — 정치 중립 비교 자료`,
+    description: `${c.name} 후보의 공개자료·공약 — 정치적으로 중립적인 비교 자료`,
   };
 }
 
@@ -57,13 +53,11 @@ export default async function CandidatePage({ params }: PageProps) {
   const district = getDistrict(candidate.districtId);
   const disclosure = getDisclosure(id);
   const allPromises = listPromises(id);
-  const checkCards = listCheckCards(id);
   const districtRows = getCompareData(candidate.districtId);
   const row = districtRows.find((r) => r.candidate.id === id);
   const crossPoints = row ? buildCrossCheckPoints(row, allPromises) : [];
   const isPending = candidate.reviewStatus !== 'reviewed';
   const basis = formatSourceBasis(disclosure?.sourceCheckedAt ?? null);
-  const avg = avgSpecificity(allPromises.map((p) => p.specificityScore));
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-6">
@@ -135,15 +129,9 @@ export default async function CandidatePage({ params }: PageProps) {
               </Link>
             ) : null}
             <div className="mt-4 flex flex-wrap gap-2">
-              {row ? (
-                <NeutralBadge tone={row.checkPriorityScore >= 71 ? 'attention' : row.checkPriorityScore >= 31 ? 'check' : 'info'}>
-                  {row.checkPriorityLabel} · 점수 {String(row.checkPriorityScore).padStart(3, '0')}/160
-                </NeutralBadge>
-              ) : null}
               {candidate.electionRunCount ? (
                 <NeutralBadge tone="muted">입후보 {candidate.electionRunCount}회</NeutralBadge>
               ) : null}
-              <NeutralBadge tone="muted">검수자 admin</NeutralBadge>
               <NeutralBadge tone="muted">출처 {String(disclosure?.sourceUrls.length ?? 0).padStart(2, '0')}건</NeutralBadge>
             </div>
           </div>
@@ -189,44 +177,12 @@ export default async function CandidatePage({ params }: PageProps) {
       <section id="promises" className="mb-10 scroll-mt-32">
         <header className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
           <HudLabel tone="cyan">공약 {String(allPromises.length).padStart(2, '0')}건</HudLabel>
-          {allPromises.length > 0 ? (
-            <p className="label-ko text-dim">
-              평균 구체성 <span className="tabular-nums text-ink/85">{avg.toFixed(1)}</span> · {specificityLabel(Math.round(avg))}
-            </p>
-          ) : null}
         </header>
         {allPromises.length === 0 ? (
           <DataPendingNote />
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             {allPromises.map((p, i) => <PromiseCard key={p.id} promise={p} index={i + 1} />)}
-          </div>
-        )}
-      </section>
-
-      <section id="check-cards" className="mb-10 scroll-mt-32">
-        <header className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-          <HudLabel tone="cyan">확인 필요도</HudLabel>
-          {row ? (
-            <span className="label-ko text-dim">
-              점수 <span className="text-ink/85 tabular-nums">{String(row.checkPriorityScore).padStart(3, '0')}</span> / 160
-            </span>
-          ) : null}
-        </header>
-        {checkCards.length === 0 ? (
-          <DataPendingNote />
-        ) : (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {checkCards.map((c) => (
-              <CheckCard
-                key={c.id}
-                severity={c.severity}
-                title={c.title}
-                body={c.body}
-                sourceUrl={c.sourceUrl}
-                basisDate={basis}
-              />
-            ))}
           </div>
         )}
       </section>

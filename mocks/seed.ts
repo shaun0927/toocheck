@@ -214,7 +214,7 @@ export const disclosures: CandidateDisclosure[] = [
   {
     candidateId: 'cand_jongno_1',
     assetTotal: 4_060_212_000, // 4,060,212천원 → 원 단위 환산
-    assetBreakdown: { realEstate: 0, deposit: 0, securities: 0, other: 100 }, // TIF OCR 대기
+    assetBreakdown: { realEstate: 0, deposit: 0, securities: 0, other: 0 }, // 분해 비율 미수집 — 등록서류 OCR 검수 후 표시
     criminalRecords: [],
     criminalRecordCountSummary: 0,
     taxArrears: [],
@@ -233,7 +233,7 @@ export const disclosures: CandidateDisclosure[] = [
   {
     candidateId: 'cand_jongno_2',
     assetTotal: 2_625_265_000, // 2,625,265천원 → 원 단위
-    assetBreakdown: { realEstate: 0, deposit: 0, securities: 0, other: 100 }, // TIF OCR 대기
+    assetBreakdown: { realEstate: 0, deposit: 0, securities: 0, other: 0 }, // 분해 비율 미수집 — 등록서류 OCR 검수 후 표시
     criminalRecords: [], // 1건 있으나 detail은 TIF 필요 — 요약 수치만 표시
     criminalRecordCountSummary: 1, // info.nec 요약 ("전과기록유무: 1건")
     taxArrears: [],
@@ -563,14 +563,6 @@ export const checkCards: CandidateCheckCard[] = [
     title: '공개된 체납 기록 없음',
     body: '공개된 공식 자료에 기재된 체납 기록이 없습니다.',
   },
-  {
-    id: 'cc_001_3',
-    candidateId: 'cand_001',
-    type: 'promise_specificity',
-    severity: 'info',
-    title: '공약 구체성 높음',
-    body: '본 후보 공약 5건의 평균 구체성 점수가 4점 이상으로, 5요소(목표·예산·기간·주체·지표)를 대부분 명시합니다.',
-  },
   // 2번 나후보 — 전과 공개 + 청렴 공약
   {
     id: 'cc_002_1',
@@ -580,14 +572,6 @@ export const checkCards: CandidateCheckCard[] = [
     title: '공개된 전과 1건 (도로교통법 위반)',
     body: '2014년 도로교통법 위반으로 벌금 100만원 처분 기록이 공개되어 있습니다. 본 정보는 공개 자료를 그대로 인용한 것입니다.',
     sourceUrl: 'https://example.test/disclosure/cand_002#criminal',
-  },
-  {
-    id: 'cc_002_2',
-    candidateId: 'cand_002',
-    type: 'promise_specificity',
-    severity: 'check',
-    title: '공약 구체성 보통',
-    body: '본 후보 공약 평균 구체성 점수가 2점대로, 예산·기간·지표 등 일부 항목이 누락된 공약이 있습니다.',
   },
   {
     id: 'cc_002_3',
@@ -615,14 +599,6 @@ export const checkCards: CandidateCheckCard[] = [
     title: '재산 분야 부동산 비중 상위',
     body: '지역 내 후보 중 부동산 비중 상위 분위에 해당합니다. 자산 구성은 공개 자료 기준입니다.',
     sourceUrl: 'https://example.test/disclosure/cand_003#asset',
-  },
-  {
-    id: 'cc_003_3',
-    candidateId: 'cand_003',
-    type: 'promise_specificity',
-    severity: 'high_attention',
-    title: '공약 구체성 낮음',
-    body: '본 후보 공약 평균 구체성 점수가 1점 미만으로, 예산·기간·주체·지표 항목이 대부분 명시되지 않습니다.',
   },
   // 4번 라후보 — needs_check
   {
@@ -652,14 +628,6 @@ export const checkCards: CandidateCheckCard[] = [
     title: '공개된 체납 기록 없음',
     body: '최근 5년간 체납액 0원, 현체납액 0원으로 공개되어 있습니다.',
     sourceUrl: 'http://info.nec.go.kr/electioninfo/candidate_detail_info.xhtml?electionId=0020260603&huboId=100154016',
-  },
-  {
-    id: 'cc_jongno_1_3',
-    candidateId: 'cand_jongno_1',
-    type: 'promise_specificity',
-    severity: 'check',
-    title: '공약 구체성 보통 (NEC 4요소 충족, 지표 미명시)',
-    body: '5대 공약 모두 NEC 표준 4요소(목표·이행방법·이행기간·재원조달)가 명시되어 있으나, 정량 지표는 본문에 표기되지 않습니다.',
   },
 
   // ─── 실데이터: 정문헌 (전과 1건 요약, detail은 TIF 필요) ───
