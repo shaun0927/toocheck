@@ -18,6 +18,8 @@ import {
 import { SITE } from '@/lib/site/config';
 import { buildCrossCheckPoints } from '@/lib/cross-check';
 import { formatSourceBasis } from '@/lib/format-date';
+import { formatKrwShort } from '@/lib/format-krw';
+import { JsonLd, breadcrumbLd, candidatePersonLd } from '@/lib/seo/jsonld';
 import {
   getCandidate,
   getCompareData,
@@ -42,10 +44,29 @@ export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
   const c = getCandidate(id);
   if (!c) return { title: '후보를 찾을 수 없음' };
+  const district = getDistrict(c.districtId);
+  const disclosure = getDisclosure(id);
   const ogImage = `${SITE.url}/api/share-card/candidate/${id}`;
+  // 교육감은 법률상 무소속 → 정당 표기 생략(R1). 빈 필드는 모두 생략(빈칸 원칙).
+  const isEdu = c.officeKind === 'education_superintendent';
+  const showParty = !isEdu && !!c.party;
+  // 제목·설명에 핵심 사실을 평문화 — CTR·AI 인용용. 결측은 throw 없이 생략.
+  const facts = [
+    district?.name,
+    `기호 ${c.ballotNumber}`,
+    showParty ? c.party : null,
+    disclosure ? `재산 ${formatKrwShort(disclosure.assetTotal)}` : null,
+    disclosure && disclosure.criminalRecords.length > 0
+      ? `전과 ${disclosure.criminalRecords.length}건`
+      : null,
+  ].filter(Boolean).join(' · ');
+  const basisDate = disclosure?.sourceCheckedAt;
   return {
-    title: `기호 ${c.ballotNumber} ${c.name} (${c.party})`,
-    description: `${c.name} 후보의 공개자료·공약 — 정치적으로 중립적인 비교 자료`,
+    title: `기호 ${c.ballotNumber} ${c.name}${showParty ? ` (${c.party})` : ''}`,
+    description: `${c.name} — ${facts} · 출처 중앙선거관리위원회${
+      basisDate ? `(${basisDate})` : ''
+    }. 공개자료 기준 정치 중립 비교.`,
+    alternates: { canonical: `/candidates/${id}` },
     openGraph: { images: [{ url: ogImage, width: 1080, height: 1080 }] },
     twitter: { card: 'summary_large_image', images: [ogImage] },
   };
@@ -75,6 +96,16 @@ export default async function CandidatePage({ params }: PageProps) {
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-6">
+      <JsonLd
+        data={[
+          candidatePersonLd(candidate, district, disclosure),
+          breadcrumbLd([
+            { name: '홈', path: '/' },
+            ...(district ? [{ name: district.name, path: `/districts/${district.id}` }] : []),
+            { name: candidate.name, path: `/candidates/${candidate.id}` },
+          ]),
+        ]}
+      />
       {/* sticky anchor */}
       <nav aria-label="섹션 이동" className="sticky top-14 z-30 -mx-6 mb-6 border-b border-hair bg-bg/90 px-6 py-2 backdrop-blur">
         <div className="relative">
@@ -140,6 +171,18 @@ export default async function CandidatePage({ params }: PageProps) {
               {candidate.gender === 'M' ? ' · 남' : candidate.gender === 'F' ? ' · 여' : ''}
               {' '}· 본 정보는 공개자료 기준
             </p>
+            {/* GEO 직답 — 중립 신원 식별 문장(재산·전과는 아래 중립 카드 유지) */}
+            {district ? (
+              <p className="mt-3 text-[14px] leading-relaxed text-ink/70">
+                {candidate.name} 후보는 {district.name} 기호 {candidate.ballotNumber}번 후보입니다.
+                {candidate.officeKind !== 'education_superintendent' && candidate.party
+                  ? ` 소속 정당은 ${candidate.party}입니다.`
+                  : candidate.officeKind === 'education_superintendent'
+                    ? ' 교육감 선거는 법률상 정당 공천이 없습니다.'
+                    : ''}
+                {' '}모든 정보는 중앙선거관리위원회 공개자료 기준입니다.
+              </p>
+            ) : null}
             {district ? (
               <Link
                 href={`/districts/${district.id}`}
@@ -353,6 +396,31 @@ export default async function CandidatePage({ params }: PageProps) {
                 </li>
               );
             })}
+          </ul>
+        </section>
+      ) : null}
+
+      {/* 같은 선거구 다른 후보 — 크롤 도달성 + 비교 동선 (#16 SEO-5) */}
+      {district && districtRows.length > 1 ? (
+        <section className="mb-10 scroll-mt-32">
+          <HudLabel tone="dim">{district.name} · 다른 후보</HudLabel>
+          <ul className="label-ko mt-3 flex flex-wrap gap-2">
+            {districtRows
+              .filter((r) => r.candidate.id !== id)
+              .map((r) => (
+                <li key={r.candidate.id}>
+                  <Link
+                    href={`/candidates/${r.candidate.id}`}
+                    className="inline-flex items-center gap-1.5 border border-hair px-2.5 py-1 text-ink/80 transition-colors hover:border-cyan hover:text-cyan"
+                  >
+                    <span className="text-cyan">기호 {r.candidate.ballotNumber}</span>
+                    <span>{r.candidate.name}</span>
+                    {r.candidate.officeKind !== 'education_superintendent' && r.candidate.party ? (
+                      <span className="text-dim">{r.candidate.party}</span>
+                    ) : null}
+                  </Link>
+                </li>
+              ))}
           </ul>
         </section>
       ) : null}

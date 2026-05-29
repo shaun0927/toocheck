@@ -21,6 +21,14 @@ import {
 } from '@/mocks/loader';
 import { formatSourceBasis } from '@/lib/format-date';
 import { formatKrwShort } from '@/lib/format-krw';
+import { JsonLd, organizationLd, websiteLd } from '@/lib/seo/jsonld';
+
+// #16 SEO-4: 홈 전용 설명·canonical. OG 이미지는 기존 정적 PNG(app/opengraph-image.png) 유지.
+export const metadata = {
+  description:
+    '2026 지방선거 후보를 재산·전과·체납·공약 기준으로 한자리에서 비교 — 중앙선거관리위원회 공개자료 기반 정치 중립 도구. 내 지역구 후보를 주소·시·군·구로 바로 찾아보세요.',
+  alternates: { canonical: '/' },
+};
 
 export default function HomePage() {
   const elections = listElections();
@@ -34,6 +42,7 @@ export default function HomePage() {
 
   return (
     <main className="relative overflow-hidden">
+      <JsonLd data={[websiteLd(), organizationLd()]} />
       {/* ===== HERO ===== */}
       <section className="relative border-b border-hair bg-bg">
         <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-30" />

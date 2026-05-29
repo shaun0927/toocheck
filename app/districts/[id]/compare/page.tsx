@@ -9,6 +9,7 @@ import { formatSourceBasis } from '@/lib/format-date';
 import { isSortKey, sortCompareRows, type SortKey } from '@/lib/api/sort';
 import { getCompareData, getDistrict, getDistrictSourceCheckedAt } from '@/mocks/loader';
 import { SITE } from '@/lib/site/config';
+import { JsonLd, breadcrumbLd } from '@/lib/seo/jsonld';
 
 import './print.css';
 
@@ -24,6 +25,8 @@ export async function generateMetadata({ params }: PageProps) {
   const ogImage = `${SITE.url}/api/share-card/compare/${id}`;
   return {
     title: `${d.name} 후보 비교표`,
+    description: `${d.name} 후보 11개 항목(재산·전과·체납·병역·공약)을 한 화면에서 비교 — 공개자료 기준. 출처 중앙선거관리위원회.`,
+    alternates: { canonical: `/districts/${id}/compare` },
     openGraph: { images: [{ url: ogImage, width: 1080, height: 1080 }] },
     twitter: { card: 'summary_large_image', images: [ogImage] },
   };
@@ -40,6 +43,13 @@ export default async function ComparePage({ params, searchParams }: PageProps) {
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-6">
+      <JsonLd
+        data={breadcrumbLd([
+          { name: '홈', path: '/' },
+          { name: district.name, path: `/districts/${id}` },
+          { name: '비교표', path: `/districts/${id}/compare` },
+        ])}
+      />
       <header className="mb-6 space-y-3">
         <StatusChip tone="live">
           <span>후보 {rows.length}명</span><ChipDivider /><span>11개 항목</span><ChipDivider /><span>기준일 · {basis}</span>

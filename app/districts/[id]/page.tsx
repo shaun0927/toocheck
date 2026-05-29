@@ -11,6 +11,7 @@ import { SortSelector } from '@/components/domain/SortSelector';
 import { SITE } from '@/lib/site/config';
 import { formatSourceBasis } from '@/lib/format-date';
 import { isSortKey, sortCompareRows, type SortKey } from '@/lib/api/sort';
+import { JsonLd, breadcrumbLd, candidateListLd } from '@/lib/seo/jsonld';
 import {
   getCompareData,
   getDistrict,
@@ -31,7 +32,8 @@ export async function generateMetadata({ params }: PageProps) {
   const ogImage = `${SITE.url}/api/share-card/region/${id}`;
   return {
     title: `${d.name} 후보 목록`,
-    description: `${d.name}의 후보 정보 비교 — 공개자료 기준`,
+    description: `${d.name} 후보 비교 — 재산·전과·체납·공약을 공개자료 기준으로 나란히. 출처 중앙선거관리위원회.`,
+    alternates: { canonical: `/districts/${id}` },
     openGraph: { images: [{ url: ogImage, width: 1080, height: 1080 }] },
     twitter: { card: 'summary_large_image', images: [ogImage] },
   };
@@ -50,6 +52,15 @@ export default async function DistrictPage({ params, searchParams }: PageProps) 
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-6">
+      <JsonLd
+        data={[
+          candidateListLd(district, rows.map((r) => r.candidate)),
+          breadcrumbLd([
+            { name: '홈', path: '/' },
+            { name: district.name, path: `/districts/${id}` },
+          ]),
+        ]}
+      />
       <div className="sticky top-14 z-30 -mx-6 mb-6 border-b border-hair bg-bg/90 px-6 py-4 backdrop-blur">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div className="space-y-2">

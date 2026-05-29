@@ -16,7 +16,10 @@ import {
 import { getCompareData, getDisclosure, listCandidates, listPromises } from '@/mocks/loader';
 import { formatSourceBasis } from '@/lib/format-date';
 
-export const metadata = { title: '디자인 시스템 카탈로그 (개발용)' };
+export const metadata = {
+  title: '디자인 시스템 카탈로그 (개발용)',
+  robots: { index: false, follow: false }, // #16 SEO-1: 개발용 페이지는 색인 제외
+};
 
 export default function PreviewPage() {
   // 디자인 카탈로그 — 서울시장 실데이터(정원오·오세훈)로 컴포넌트 상태 검수.
