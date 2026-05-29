@@ -2,7 +2,10 @@ import Link from 'next/link';
 import { HudLabel, LimeStamp, RegistrationMarks } from '@/components/domain';
 import { SITE } from '@/lib/site/config';
 
-export const metadata = { title: '수정 요청 접수 완료' };
+export const metadata = {
+  title: '수정 요청 접수 완료',
+  robots: { index: false, follow: false }, // #16 SEO-1
+};
 
 interface PageProps { searchParams: Promise<{ id?: string }>; }
 

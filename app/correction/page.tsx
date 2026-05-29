@@ -6,6 +6,7 @@ import { CorrectionForm } from './CorrectionForm';
 export const metadata = {
   title: '수정 요청',
   description: '공개자료에 오류가 있을 경우 수정 요청을 보내주세요.',
+  robots: { index: false, follow: false }, // #16 SEO-1: 폼 페이지는 색인 제외
 };
 
 export default function CorrectionPage() {
