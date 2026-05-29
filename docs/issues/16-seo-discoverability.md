@@ -17,15 +17,17 @@
 
 | PR | 단위 | 시점 | 상태 |
 |---|---|---|---|
-| **PR1** | SEO-1 색인 플립 + canonical 기본 + 검증 메타 골격 | 즉시 | 착수 대기 |
-| **PR2** | SEO-2 `robots.ts` + `sitemap.ts` (PR1과 **분리**) | 즉시 | 대기 |
-| **(ops)** | SEO-3 구글·네이버·빙 등록·사이트맵 제출·색인 요청 | PR2 직후(비동기) | 대기 |
-| **PR3** | SEO-3 후속 — 발급 토큰 주입 | 등록 완료 후 | 대기 |
-| **PR4** | SEO-4 메타 사실 평문화 + 홈 메타 + per-page canonical | 패스트팔로 | 대기 |
-| **PR6** | SEO-6 JSON-LD (Person·ItemList·Breadcrumb·FAQ·WebSite) | 패스트팔로 | 대기 |
-| **PR5** | SEO-5 크롤 도달성 — 탐색형 인덱스 + 형제 링크 | 그다음 | 대기 |
-| **PR7** | SEO-7 GEO 콘텐츠 — 직답 요약 + 출처 표기 + FAQ | 그다음 | 대기 |
+| **PR1** | SEO-1 색인 플립 + canonical 기본 + 검증 메타 골격 | 즉시 | ✅ 구현·검증 완료 |
+| **PR2** | SEO-2 `robots.ts` + `sitemap.ts` (PR1과 **분리**) | 즉시 | ✅ 구현·검증 완료 (10,899 URL) |
+| **(ops)** | SEO-3 구글·네이버·빙 등록·사이트맵 제출·색인 요청 | PR2 직후(비동기) | ⏳ **운영자 수동** (외부 계정 필요) |
+| **PR3** | SEO-3 후속 — 발급 토큰 주입 | 등록 완료 후 | 🔧 코드 준비됨 (env `NAVER/GOOGLE_SITE_VERIFICATION` 주입만) |
+| **PR4** | SEO-4 메타 사실 평문화 + 홈 메타 + per-page canonical | 패스트팔로 | ✅ 구현·검증 완료 |
+| **PR6** | SEO-6 JSON-LD (Person·ItemList·Breadcrumb·FAQ·WebSite) | 패스트팔로 | ✅ 구현·검증 완료 |
+| **PR5** | SEO-5 크롤 도달성 — 탐색형 인덱스 + 형제 링크 | 그다음 | ✅ 구현·검증 완료 |
+| **PR7** | SEO-7 GEO 콘텐츠 — 직답 요약 + 출처 표기 + FAQ | 그다음 | ✅ 구현·검증 완료 |
 | ~~PR8~~ | ~~SEO-8 SSG/ISR~~ | **보류** | 선거 후 |
+
+> **구현 결과(2026-05-29)**: 코드 PR 6건(SEO-1·2·4·5·6·7)을 `feat/seo-discoverability` 브랜치에 원자 커밋으로 완료. 안전 게이트 전수 통과(typecheck·lint·check:forbidden·test 56건·`pnpm build`). 프로덕션(`next start`) 9개 경로 200·서버 에러 0. **#70 동적/정적 경계 보존**(후보·지역·비교 라우트 ƒ 동적 유지, OG 정적 PNG 유지, 네이티브 의존성 재유입 없음). 남은 일: SEO-3 등록(외부 계정) → PR3 토큰 주입 → Vercel 프리뷰 최종 확인.
 
 **권장 머지 순서**: PR1 → PR2 → (등록 ops 시작) → PR4 → PR6 → PR5 → PR7. (PR3은 토큰 발급되는 대로 독립 머지.)
 
