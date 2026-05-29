@@ -63,7 +63,14 @@ function partyStyle(party: string): { text: string; accent: string } {
 /** 후보 칩 — id가 있으면 상세 페이지로 링크(클릭 가능), 없으면(비례대표) 비링크 표시. */
 function CandidateChip({ c }: { c: CandidateLite }) {
   const ps = partyStyle(c.party);
-  const inner = (
+  // 비례대표는 개인이 아니라 정당명부 단위 — 정당명 + 명부 인원으로 표시(이름 중복 방지).
+  const isProportional = c.proportionalCount != null;
+  const inner = isProportional ? (
+    <>
+      <span className={`font-semibold ${ps.text}`}>{c.party}</span>
+      <span className="text-dim">비례명부 {c.proportionalCount}명</span>
+    </>
+  ) : (
     <>
       {c.ballotNumber > 0 ? (
         <span className="tabular-nums font-semibold text-cyan">{c.ballotNumber}</span>
@@ -217,15 +224,25 @@ export function RegionSearch() {
             {data.sido} {data.sigungu} · 2026 지방선거 후보{' '}
             <span className="text-cyan">· 후보를 누르면 상세 페이지로 이동합니다</span>
           </p>
-          {data.races.filter((race) => race.candidateCount > 0).map((race) => (
+          {data.races.filter((race) => race.candidateCount > 0).map((race) => {
+            const isProportional = race.officeKind.includes('proportional');
+            return (
             <div key={race.officeKind} className="border-t border-hair-soft pt-3">
               <div className="flex flex-wrap items-baseline gap-x-3">
                 <h3 className="font-ko font-semibold text-ink">{race.label}</h3>
-                <span className="label-ko text-dim">후보 {race.candidateCount}명</span>
+                <span className="label-ko text-dim">
+                  {isProportional ? `정당 ${race.candidateCount}곳` : `후보 ${race.candidateCount}명`}
+                </span>
                 {race.level === 'sigungu' && race.sggCount > 1 ? (
                   <span className="label-ko text-cyan">선거구 {race.sggCount}곳 · 거주 동에 따라 선택</span>
                 ) : null}
               </div>
+              {isProportional ? (
+                <p className="label-ko mt-1 text-ink/55">
+                  비례대표는 <span className="text-ink/75">정당명부 투표</span>입니다 — 후보 개인이 아니라
+                  정당에 투표하며, 당선 인원은 정당 득표율에 따라 명부 순위대로 정해집니다.
+                </p>
+              ) : null}
               {race.groups.length === 0 ? (
                 <p className="label-ko mt-1 text-dim">등록 후보 없음</p>
               ) : (
@@ -250,7 +267,8 @@ export function RegionSearch() {
                 </div>
               )}
             </div>
-          ))}
+            );
+          })}
           <p className="label-ko text-ink/55">
             * 후보 명단은 중앙선거관리위원회 등록 자료 기준입니다. 시·도의원·구의원은 거주 동에 따라
             위 선거구 중 하나에 투표합니다. 공약·재산 등 상세 자료는 순차 공개됩니다.
