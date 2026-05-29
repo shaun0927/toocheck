@@ -24,6 +24,8 @@ export async function generateMetadata({ params }: PageProps) {
   const ogImage = `${SITE.url}/api/share-card/compare/${id}`;
   return {
     title: `${d.name} 후보 비교표`,
+    description: `${d.name} 후보 11개 항목(재산·전과·체납·병역·공약)을 한 화면에서 비교 — 공개자료 기준. 출처 중앙선거관리위원회.`,
+    alternates: { canonical: `/districts/${id}/compare` },
     openGraph: { images: [{ url: ogImage, width: 1080, height: 1080 }] },
     twitter: { card: 'summary_large_image', images: [ogImage] },
   };

@@ -18,6 +18,7 @@ import {
 import { SITE } from '@/lib/site/config';
 import { buildCrossCheckPoints } from '@/lib/cross-check';
 import { formatSourceBasis } from '@/lib/format-date';
+import { formatKrwShort } from '@/lib/format-krw';
 import {
   getCandidate,
   getCompareData,
@@ -42,10 +43,29 @@ export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
   const c = getCandidate(id);
   if (!c) return { title: '후보를 찾을 수 없음' };
+  const district = getDistrict(c.districtId);
+  const disclosure = getDisclosure(id);
   const ogImage = `${SITE.url}/api/share-card/candidate/${id}`;
+  // 교육감은 법률상 무소속 → 정당 표기 생략(R1). 빈 필드는 모두 생략(빈칸 원칙).
+  const isEdu = c.officeKind === 'education_superintendent';
+  const showParty = !isEdu && !!c.party;
+  // 제목·설명에 핵심 사실을 평문화 — CTR·AI 인용용. 결측은 throw 없이 생략.
+  const facts = [
+    district?.name,
+    `기호 ${c.ballotNumber}`,
+    showParty ? c.party : null,
+    disclosure ? `재산 ${formatKrwShort(disclosure.assetTotal)}` : null,
+    disclosure && disclosure.criminalRecords.length > 0
+      ? `전과 ${disclosure.criminalRecords.length}건`
+      : null,
+  ].filter(Boolean).join(' · ');
+  const basisDate = disclosure?.sourceCheckedAt;
   return {
-    title: `기호 ${c.ballotNumber} ${c.name} (${c.party})`,
-    description: `${c.name} 후보의 공개자료·공약 — 정치적으로 중립적인 비교 자료`,
+    title: `기호 ${c.ballotNumber} ${c.name}${showParty ? ` (${c.party})` : ''}`,
+    description: `${c.name} — ${facts} · 출처 중앙선거관리위원회${
+      basisDate ? `(${basisDate})` : ''
+    }. 공개자료 기준 정치 중립 비교.`,
+    alternates: { canonical: `/candidates/${id}` },
     openGraph: { images: [{ url: ogImage, width: 1080, height: 1080 }] },
     twitter: { card: 'summary_large_image', images: [ogImage] },
   };

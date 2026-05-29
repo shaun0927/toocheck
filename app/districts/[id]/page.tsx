@@ -31,7 +31,8 @@ export async function generateMetadata({ params }: PageProps) {
   const ogImage = `${SITE.url}/api/share-card/region/${id}`;
   return {
     title: `${d.name} 후보 목록`,
-    description: `${d.name}의 후보 정보 비교 — 공개자료 기준`,
+    description: `${d.name} 후보 비교 — 재산·전과·체납·공약을 공개자료 기준으로 나란히. 출처 중앙선거관리위원회.`,
+    alternates: { canonical: `/districts/${id}` },
     openGraph: { images: [{ url: ogImage, width: 1080, height: 1080 }] },
     twitter: { card: 'summary_large_image', images: [ogImage] },
   };
