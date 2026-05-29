@@ -21,6 +21,7 @@ import {
 } from '@/mocks/loader';
 import { formatSourceBasis } from '@/lib/format-date';
 import { formatKrwShort } from '@/lib/format-krw';
+import { JsonLd, organizationLd, websiteLd } from '@/lib/seo/jsonld';
 
 // #16 SEO-4: 홈 전용 설명·canonical. OG 이미지는 기존 정적 PNG(app/opengraph-image.png) 유지.
 export const metadata = {
@@ -41,6 +42,7 @@ export default function HomePage() {
 
   return (
     <main className="relative overflow-hidden">
+      <JsonLd data={[websiteLd(), organizationLd()]} />
       {/* ===== HERO ===== */}
       <section className="relative border-b border-hair bg-bg">
         <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-30" />

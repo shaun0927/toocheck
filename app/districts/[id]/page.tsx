@@ -11,6 +11,7 @@ import { SortSelector } from '@/components/domain/SortSelector';
 import { SITE } from '@/lib/site/config';
 import { formatSourceBasis } from '@/lib/format-date';
 import { isSortKey, sortCompareRows, type SortKey } from '@/lib/api/sort';
+import { JsonLd, breadcrumbLd, candidateListLd } from '@/lib/seo/jsonld';
 import {
   getCompareData,
   getDistrict,
@@ -51,6 +52,15 @@ export default async function DistrictPage({ params, searchParams }: PageProps) 
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-6">
+      <JsonLd
+        data={[
+          candidateListLd(district, rows.map((r) => r.candidate)),
+          breadcrumbLd([
+            { name: '홈', path: '/' },
+            { name: district.name, path: `/districts/${id}` },
+          ]),
+        ]}
+      />
       <div className="sticky top-14 z-30 -mx-6 mb-6 border-b border-hair bg-bg/90 px-6 py-4 backdrop-blur">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div className="space-y-2">

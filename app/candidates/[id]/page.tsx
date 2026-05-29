@@ -19,6 +19,7 @@ import { SITE } from '@/lib/site/config';
 import { buildCrossCheckPoints } from '@/lib/cross-check';
 import { formatSourceBasis } from '@/lib/format-date';
 import { formatKrwShort } from '@/lib/format-krw';
+import { JsonLd, breadcrumbLd, candidatePersonLd } from '@/lib/seo/jsonld';
 import {
   getCandidate,
   getCompareData,
@@ -95,6 +96,16 @@ export default async function CandidatePage({ params }: PageProps) {
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-6">
+      <JsonLd
+        data={[
+          candidatePersonLd(candidate, district, disclosure),
+          breadcrumbLd([
+            { name: '홈', path: '/' },
+            ...(district ? [{ name: district.name, path: `/districts/${district.id}` }] : []),
+            { name: candidate.name, path: `/candidates/${candidate.id}` },
+          ]),
+        ]}
+      />
       {/* sticky anchor */}
       <nav aria-label="섹션 이동" className="sticky top-14 z-30 -mx-6 mb-6 border-b border-hair bg-bg/90 px-6 py-2 backdrop-blur">
         <div className="relative">
