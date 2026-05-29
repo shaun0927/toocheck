@@ -171,6 +171,18 @@ export default async function CandidatePage({ params }: PageProps) {
               {candidate.gender === 'M' ? ' · 남' : candidate.gender === 'F' ? ' · 여' : ''}
               {' '}· 본 정보는 공개자료 기준
             </p>
+            {/* GEO 직답 — 중립 신원 식별 문장(재산·전과는 아래 중립 카드 유지) */}
+            {district ? (
+              <p className="mt-3 text-[14px] leading-relaxed text-ink/70">
+                {candidate.name} 후보는 {district.name} 기호 {candidate.ballotNumber}번 후보입니다.
+                {candidate.officeKind !== 'education_superintendent' && candidate.party
+                  ? ` 소속 정당은 ${candidate.party}입니다.`
+                  : candidate.officeKind === 'education_superintendent'
+                    ? ' 교육감 선거는 법률상 정당 공천이 없습니다.'
+                    : ''}
+                {' '}모든 정보는 중앙선거관리위원회 공개자료 기준입니다.
+              </p>
+            ) : null}
             {district ? (
               <Link
                 href={`/districts/${district.id}`}
