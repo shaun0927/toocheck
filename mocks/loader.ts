@@ -24,7 +24,14 @@ import siteData from '@/data/curated/site-data.json';
 
 const allCandidates = siteData.candidates as unknown as Candidate[];
 const allDistricts = siteData.districts as unknown as District[];
-const allDisclosures = siteData.disclosures as unknown as CandidateDisclosure[];
+// NEC 사진 CDN(cdn.nec.go.kr)은 https를 지원하지만 원본 데이터의 photoUrl이
+// 전부 http:// 라 HTTPS 페이지에서 Mixed Content가 발생한다. 데이터 계층에서
+// 한 번에 https로 정규화해 모든 소비자(후보 페이지·공유카드·비교표)에 적용한다.
+const allDisclosures = (siteData.disclosures as unknown as CandidateDisclosure[]).map((d) =>
+  d.photoUrl?.startsWith('http://')
+    ? { ...d, photoUrl: `https://${d.photoUrl.slice('http://'.length)}` }
+    : d
+);
 const allPromises = siteData.promises as unknown as CandidatePromise[];
 
 function clone<T>(v: T): T {
