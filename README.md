@@ -4,6 +4,13 @@
 
 🔗 **서비스: <https://toocheck.site>**
 
+- 구현: [@shaun0927](https://github.com/shaun0927)
+- 프로젝트 기획: [@berkshirehathaways](https://github.com/berkshirehathaways)
+- 운영: 투체크팀 · <contact@alphaview.kr>
+- 결정 동결: [`docs/prd-addendum.md`](./docs/prd-addendum.md), [이슈 #13](https://github.com/shaun0927/toocheck/issues/13)
+
+> [@shaun0927](https://github.com/shaun0927)이 만들고, [@berkshirehathaways](https://github.com/berkshirehathaways)가 기획한 프로젝트입니다.
+
 후보 지지·반대 의도 없이, 공개된 사실 자료만 출처·기준일과 함께 보여줍니다. 자료의 빈칸은 채워 넣지 않고 빈칸으로 둡니다.
 
 | 홈 · 내 지역구 찾기 | 후보 비교표 | 후보 상세 |
