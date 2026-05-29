@@ -388,6 +388,31 @@ export default async function CandidatePage({ params }: PageProps) {
         </section>
       ) : null}
 
+      {/* 같은 선거구 다른 후보 — 크롤 도달성 + 비교 동선 (#16 SEO-5) */}
+      {district && districtRows.length > 1 ? (
+        <section className="mb-10 scroll-mt-32">
+          <HudLabel tone="dim">{district.name} · 다른 후보</HudLabel>
+          <ul className="label-ko mt-3 flex flex-wrap gap-2">
+            {districtRows
+              .filter((r) => r.candidate.id !== id)
+              .map((r) => (
+                <li key={r.candidate.id}>
+                  <Link
+                    href={`/candidates/${r.candidate.id}`}
+                    className="inline-flex items-center gap-1.5 border border-hair px-2.5 py-1 text-ink/80 transition-colors hover:border-cyan hover:text-cyan"
+                  >
+                    <span className="text-cyan">기호 {r.candidate.ballotNumber}</span>
+                    <span>{r.candidate.name}</span>
+                    {r.candidate.officeKind !== 'education_superintendent' && r.candidate.party ? (
+                      <span className="text-dim">{r.candidate.party}</span>
+                    ) : null}
+                  </Link>
+                </li>
+              ))}
+          </ul>
+        </section>
+      ) : null}
+
       <div className="label-ko mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-hair pt-5 text-dim">
         {district ? (
           <Link href={`/districts/${district.id}`} className="hover:text-cyan">
